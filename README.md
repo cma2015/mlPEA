@@ -21,10 +21,6 @@
 ## How to access help
 * Comments/suggestions/bugs/issues are welcome reported [here](https://github.com/cma2015/mlPEA/issues) or contact: Jing Yang sxxayj@nwafu.edu.cn, Minggui Song smg@nwafu.edu.cn or Chuang Ma chuangma2006@gmail.com
 
-## Change log
-- 2024.12 Release mlPEA v1.0
-- 2022.09 we launched mlPEA project
-
 ## Quick start
 
 - **Step 1**: mlPEA installation from Docker Hub
@@ -51,3 +47,9 @@ Then, mlPEA local server can be accessed via [http://localhost:8080](http://loca
 - **Step 5**: Read mapping and m<sup>6</sup>A calling
 
 - **Step 5**: Functional Exploration
+
+
+## Change log
+- 2024.12 Release mlPEA v1.0
+- 2024.10 mlPEA web server online
+- 2022.09 we launched mlPEA project
