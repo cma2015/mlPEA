@@ -6,7 +6,7 @@
 - mlPEA is a user-friendly and multi-functionality platform specifically tailored to the needs of streamlined processing of m<sup>6</sup>A-Seq data in a reference genome-free manner. By taking advantage of machine learning (ML) algorithms, mlPEA enhanced the m<sup>6</sup>A-Seq data analysis by constructing robust computational models for identifying high-quality transcripts and high-confidence m<sup>6</sup>A-modified regions. mlPEA comprises four functional modules: **Data Preprocessing, Transcriptome Construction, m<sup>6</sup>A Calling, and Functional Exploration**. 
 - The mlPEA project is hosted on https://github.com/cma2015/mlPEA.
 - The mlPEA Docker image can be obtained from https://hub.docker.com/r/malab/mlpea.
-![PanGraphRNA](https://github.com/cma2015/PanGraphRNA/blob/main/Tutorials/PanGraphRNA_framework.png)
+
 ## How to use mlPEA
 - Test data and tutorial of mlPEA are presented at https://github.com/cma2015/mlPEA/tree/main/Tutorials
 - [The installation of mlPEA](https://github.com/cma2015/mlPEA/blob/main/Tutorials/00_Installation.md)
