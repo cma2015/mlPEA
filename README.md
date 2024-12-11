@@ -1,9 +1,9 @@
-## PanGraphRNA: an efficient and flexible bioinformatics platform for graph pangenome-based RNA-seq data analysis
+## mlPEA: a user-friendly and multi-functionality platform for reference genome-free m<sup>6</sup>A-Seq data analysis
 
-<a href="https://hub.docker.com/r/malab/pangraphrna" target="_blank"><img src="https://img.shields.io/badge/Docker_image-ready-red.svg" target="_blank"></a><a href="https://hub.docker.com/r/malab/pangraphrna" target="_blank"><img src="https://img.shields.io/docker/pulls/malab/pangraphrna"></a><a href="https://github.com/cma2015/PanGraphRNA" target="_blank"><img src="https://img.shields.io/badge/Source%20codes-support-blue"></a>
+<a href="https://hub.docker.com/r/malab/mlpea" target="_blank"><img src="https://img.shields.io/badge/Docker_image-ready-red.svg" target="_blank"></a><a href="https://hub.docker.com/r/malab/mlpea" target="_blank"><img src="https://img.shields.io/docker/pulls/malab/mlpea"></a><a href="https://github.com/cma2015/mlPEA" target="_blank"><img src="https://img.shields.io/badge/Source%20codes-support-blue"></a>
 
 ## Introduction
-- PanGraphRNA is an efficient, flexible and web-based Galaxy platform that can be easily used to construct graph pangenomes from genetic variations at individual, subpopulation, and population levels. It can assist researchers to select appropriate graph pangenomes using various performance metrics for both real and simulation experiments. Currently, PanGraphRNA is composed of four graph pangenome-related functional modules: **Preparation Module, Construction Module, Evaluation Module, and Application Module**. 
+- mlPEA is a user-friendly and multi-functionality platform specifically tailored to the needs of streamlined processing of m<sup>6</sup>A-Seq data in a reference genome-free manner. By taking advantage of machine learning (ML) algorithms, mlPEA enhanced the m<sup>6</sup>A-Seq data analysis by constructing robust computational models for identifying high-quality transcripts and high-confidence m<sup>6</sup>A-modified regions. Currently, mlPEA is composed of four functional modules: **Data Preprocessing, Transcriptome Construction, m<sup>6</sup>A Calling, and Functional Exploration**. 
 - The PanGraphRNA project is hosted on https://github.com/cma2015/PanGraphRNA.
 - The PanGraphRNA Docker image can be obtained from https://hub.docker.com/r/malab/pangraphrna.
 ![PanGraphRNA](https://github.com/cma2015/PanGraphRNA/blob/main/Tutorials/PanGraphRNA_framework.png)
