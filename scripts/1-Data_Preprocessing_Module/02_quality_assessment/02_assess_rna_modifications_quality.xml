@@ -1,0 +1,79 @@
+<tool id="Assess_RNA_Modifications_Quality" name="Assess RNA Modification Quality">
+  <command><![CDATA[
+	mkdir -p ${__tool_directory__}/$$/ &&
+	cd ${__tool_directory__}/$$/ &&
+	/home/galaxy/miniconda3/envs/bio/bin/kmc -t${thread} 
+		-k${kmer_length} -ci${qualified_quality_phred} -cs1000000 ${readIP} ip_tmp_res .
+	&& /home/galaxy/miniconda3/envs/bio/bin/kmc -t${thread} 
+		-k${kmer_length} -ci${qualified_quality_phred}  -cs1000000 ${readInput} input_tmp_res .
+	&& /home/galaxy/miniconda3/envs/bio/bin/kmc_tools simple input_tmp_res
+		-ci${qualified_quality_phred}  ip_tmp_res 
+		-ci${qualified_quality_phred}  intersect input_union -ocleft 
+		intersect ip_union -ocright
+    && /home/galaxy/miniconda3/envs/bio/bin/kmc_dump input_union input_union
+	&& /home/galaxy/miniconda3/envs/bio/bin/kmc_dump ip_union ip_union
+	&& mv ip_union $ip_union
+	&& mv input_union $input_union
+	&& rm -rf ${__tool_directory__}/$$/	
+  ]]></command>
+  <inputs>
+
+	<param name="readIP" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq" label="Read file (IP)"/>
+	<param name="readInput" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq" label="Read file (Input)"/>
+
+	
+	<param name="kmer_length"  argument="-k" type="integer" value="25" label="k-mers length" help="k-mer length (k from 1 to 256; default: 25)."/>
+	<param name="qualified_quality_phred"  argument="-ci" type="integer" value="2" label="The threshold value of k-mers" help="exclude k-mers occurring less than value times (default: 2)."/>
+	<param name="thread" type="integer" value="1" min="1" max="4" label="Threads" help="The number of threads used for parallel computation."/>
+
+  </inputs>
+  <stdio>
+	<exit_code range="1:"  level="fatal" description="Error Running combine collection to a file" />
+  </stdio>
+   <outputs>
+	   <data name="ip_union" format="txt" label="${readIP.name}_kmc_report.txt">
+	   </data>
+	   <data name="input_union" format="txt" label="${readInput.name}_kmc_report.txt">
+       </data>
+		
+    </outputs>
+<help><![CDATA[
+.. class:: infomark
+
+**What it does**
+
+In this function, one existing disk-based program KMC (Deorowicz *et al*., 2013; Deorowicz *et al*., 2015; Kokot *et al*., 2017) is integrated to count k-mers from (possibly gzipped) FASTQ/FASTA files.
+
+-----
+
+.. class:: infomark
+
+**Inputs**
+
+- **Input FASTQ file:** IP and Input cleaned epitranscriptome sequence reads in FASTQ format
+
+-----
+
+.. class:: infomark
+
+**Parameters**
+
+- **k-mers length:** k-mer length (k from 1 to 256; default: 25)
+- **The threshold value of k-mers:** exclude k-mers occurring less than value times (default: 2)
+
+-----
+
+.. class:: infomark
+
+**Outputs**
+
+- **Clean IP reads k-mer count lists in TXT format**
+- **Clean Input reads k-mer count lists in TXT format**
+
+]]></help>
+    <citations>
+        <citation type="doi">10.1186/1471-2105-14-160</citation>
+        <citation type="doi">10.1093/bioinformatics/btv022</citation>
+		<citation type="doi">10.1093/bioinformatics/btx304</citation>
+    </citations>
+</tool>

@@ -1,0 +1,209 @@
+<tool id="Machine_Learning_Filter" name="Machine Learning Screening">
+  <description></description>
+  <command><![CDATA[
+    mkdir -p ${__tool_directory__}/$$/ide80_cov50
+    && mkdir -p ${__tool_directory__}/$$/ide80_cov50/tmp
+    && mkdir -p ${__tool_directory__}/$$/ide80_cov50/clu
+    && mkdir -p ${__tool_directory__}/$$/ide80_cov50/clu_seq
+    && mkdir -p ${__tool_directory__}/$$/ide80_cov50/clu_rep_seq
+    && mkdir -p ${__tool_directory__}/$$/corain_features  
+    && cat ${__tool_directory__}/03_plants_mrna_ncrna.fa $Fasta > ${__tool_directory__}/$$/tmp.fa &&
+    /home/galaxy/miniconda3/envs/bio/bin/mmseqs createdb ${__tool_directory__}/$$/tmp.fa ${__tool_directory__}/$$/ide80_cov50/ide80_cov50 &&
+    /home/galaxy/miniconda3/envs/bio/bin/mmseqs cluster 
+          ${__tool_directory__}/$$/ide80_cov50/ide80_cov50 ${__tool_directory__}/$$/ide80_cov50/clu/clu ${__tool_directory__}/$$/ide80_cov50/tmp 
+          --cov-mode $MMseq2_cluster.coverage_mode --cluster-mode $MMseq2_cluster.cluster_mode -c $MMseq2_cluster.min_cov
+          --min-seq-id $MMseq2_cluster.min_id 
+          --threads $thread 
+          --sort-results $MMseq2_cluster.sort_results 
+    #if $MMseq2_cluster.cluster_reassign == "yes":
+          --cluster-reassign
+    #end if
+    && /home/galaxy/miniconda3/envs/bio/bin/mmseqs createtsv ${__tool_directory__}/$$/ide80_cov50/ide80_cov50 ${__tool_directory__}/$$/ide80_cov50/ide80_cov50
+          ${__tool_directory__}/$$/ide80_cov50/clu/clu ${__tool_directory__}/$$/clustered.tsv
+    && /home/galaxy/miniconda3/envs/bio/bin/mmseqs createseqfiledb ${__tool_directory__}/$$/ide80_cov50/ide80_cov50 ${__tool_directory__}/$$/ide80_cov50/clu/clu ${__tool_directory__}/$$/ide80_cov50/clu_seq/clu_seq
+    && /home/galaxy/miniconda3/envs/bio/bin/mmseqs result2flat ${__tool_directory__}/$$/ide80_cov50/ide80_cov50 
+          ${__tool_directory__}/$$/ide80_cov50/ide80_cov50
+          ${__tool_directory__}/$$/ide80_cov50/clu_seq/clu_seq 
+          ${__tool_directory__}/$$/ide80_cov50/clu_seq/clu_seq.fasta --use-fasta-header
+    && /home/galaxy/miniconda3/envs/bio/bin/mmseqs createsubdb ${__tool_directory__}/$$/ide80_cov50/clu/clu
+          ${__tool_directory__}/$$/ide80_cov50/ide80_cov50 ${__tool_directory__}/$$/ide80_cov50/clu_rep_seq/clu_rep_seq
+    && /home/galaxy/miniconda3/envs/bio/bin/mmseqs convert2fasta ${__tool_directory__}/$$/ide80_cov50/clu_rep_seq/clu_rep_seq
+          ${__tool_directory__}/$$/ide80_cov50/clu_rep_seq/clu_rep.fasta
+    && /home/galaxy/miniconda3/envs/bio/bin/Rscript ${__tool_directory__}/03_MMseq2.R 
+          -a ${__tool_directory__}/$$/ide80_cov50/clu_rep_seq/clu_rep.fasta
+          -b ${__tool_directory__}/$$/ide80_cov50/clu_rep_seq/clu_info.txt
+          -c ${__tool_directory__}/$$/clustered.tsv
+          -d $Fasta
+          -e ${__tool_directory__}/$$/combine_assembly_df.txt
+          -f ${__tool_directory__}/$$/assembly_id.txt
+    && /home/galaxy/miniconda3/envs/bio/bin/Rscript ${__tool_directory__}/03_IPSoL_positive_selection.R
+          -a  ${__tool_directory__}/$$/tmp.fa
+          -b  ${__tool_directory__}/$$/assembly_length.txt
+          -c  ${__tool_directory__}/$$/combine_assembly_df.txt
+          -d  $Fasta
+          -e  ${__tool_directory__}/$$/positive_set.txt
+          -f  ${__tool_directory__}/$$/seq_label.csv
+    && source /home/galaxy/miniconda3/bin/activate /home/galaxy/miniconda3/envs/corain
+    && cd /home/galaxy/corain
+    && /home/galaxy/miniconda3/envs/corain/bin/python corain.py
+          -t RNAonly
+          -a $Fasta
+          -l ${__tool_directory__}/$$/seq_label.csv
+          -o ${__tool_directory__}/$$/corain_features
+          -d 1 -s csv -m RF -c 2
+    && /home/galaxy/miniconda3/envs/bio/bin/python ${__tool_directory__}/03_merge_features.py
+          -d ${__tool_directory__}/$$/corain_features/RNAonly/encoding_features
+          -f $corain_features.seq.seq,$corain_features.struct.struct,$corain_features.chem.chem
+          -o ${__tool_directory__}/$$/total_features.csv
+    && /home/galaxy/miniconda3/envs/bio/bin/Rscript ${__tool_directory__}/03_IPSoL_flow.R
+          -trans_id ${__tool_directory__}/$$/assembly_id.txt
+          -positive_set ${__tool_directory__}/$$/positive_set.txt
+          -features ${__tool_directory__}/$$/total_features.csv
+          -output_dir ${__tool_directory__}/$$
+          -feature_num $init_negative_samples.features_selection
+          -fasta $Fasta
+          -cpus $thread
+          -iterator $init_negative_samples.iterator
+          #if $ifCV.cv == "yes":
+            -ifcv $ifCV.kfold
+            -cross $ifCV.kfold
+          #end if
+          -bagging_model $init_negative_samples.algorithm
+    && mv ${__tool_directory__}/$$/PUlearning.fa $fastq0
+  ]]></command>
+  <inputs>
+    <param name="Fasta" type="data" format="fasta,fna,fa"  multiple="false" label="Input the transfrags file" help=""/>
+    <label name="test" text="test"/> 
+    <section name="MMseq2_cluster" title="Positive Sample Generation" expand="false">
+      <param name="min_cov" type="float" value="0.5" label="Min coverage" help="List matches above this fraction of aligned (covered) residues.(default: 0.5)(-c)"/>
+      <param name="min_id" type="float" value="0.8" label="Min identity" help="List matches above this sequence identity (for clustering) (range 0.0-1.0) (default: 0.8)(--min-seq-id)"/>
+      <param name="cluster_reassign" type="select" label="Cluster reassign"  display="radio" help="Cascaded clustering can cluster sequence that do not fulfill the clustering criteria.Cluster reassignment corrects these errors.(--cluster-reassign)">
+         <option value="yes" selected="True">True</option>
+         <option value="no">False</option>
+      </param>
+      <param name="coverage_mode" type="select" label="Coverage mode" help="(--cov-mode)">
+          <option value="0">0:coverage of query and target</option>
+          <option value="1" selected="true">1:coverage of target</option>
+          <option value="2">2:coverage of query</option>
+          <option value="3">3:target seq(length has to be at least x% of query length)</option>
+          <option value="4">4:query seq(length has to be at least x% of target length)</option>
+          <option value="5">5:short seq(needs to be at least x% of the other seq)</option>
+      </param>
+      <param name="cluster_mode" type="select" label="Cluster mode" help="All clustering modes transform the alignment results into an undirected graph.(--cluster-mode)">
+          <option value="0">0:The Greedy Set cover algorithm </option>
+          <option value="1" >1:Connected component</option>
+          <option value="2" selected="true">2:Greedy incremental(CD-HIT clustering algorithm)</option>
+      </param>
+      <param name="sort_results" type="select" label="Sort results"  display="radio" help="(--sort-results)">
+         <option value="1" selected="True">sort by E-value (Alignment) or seq.id</option>
+         <option value="0">no sorting</option>
+      </param>
+    </section>
+
+   <section name="corain_features" title="Feature Encoding" expand="false">
+      <section name="seq" title="Sequence-Intrinsic Features">
+        <param name="seq" type="select" label=" " multiple="true" display="checkboxes">
+          <option value="feature1" selected="true">Guanine-cytosine(7)</option>
+          <option value="feature2" selected="true">Codon related(5)</option>
+          <option value="feature3" selected="true">K-mer(84)</option>
+          <option value="feature4" selected="true">Global descriptor(30)</option>
+          <option value="feature5" selected="true">Entropy density related(20)</option>
+          <option value="feature6" selected="true">Open reading frame(31)</option>
+        </param>
+      </section>
+
+      <section name="struct" title="Structure-Based Features">
+        <param name="struct" type="select" label=" " multiple="true" display="checkboxes">
+          <option value="feature7" selected="true">Secondary structure(8)</option>
+          <option value="feature8" selected="true">Molecular fingerprint(27)</option>
+          <option value="feature9" selected="true">Topological indices(66)</option>
+        </param>
+      </section>
+
+      <section name="chem" title="Physico-Chemical Features">
+        <param name="chem" type="select" label=" " multiple="true" display="checkboxes">
+          <option value="feature10" selected="true">Pse-protein related(5)</option>
+          <option value="feature11" selected="true">Nucleotide related(182)</option>
+          <option value="feature12" selected="true">EIIP based spectrum(8)</option>
+          <option value="feature13" selected="true">Lipoaffinity index(42)</option>
+          <option value="feature14" selected="true">Partition coefficient(42)</option>
+          <option value="feature15" selected="true">Molar refractivity(27)</option>
+          <option value="feature16" selected="true">Hydrogen bond related(93)</option>
+        </param>
+      </section>
+
+    </section>
+
+    <section name="init_negative_samples" title="Model Learning and Labeling" expand="false">
+      <param name="features_selection" type="integer" value="50" min="50" max="677" label="Features Seclection" help="Features selection by calculating the mutual information score of features"/>
+      <param name="algorithm" type="select" label="Select a machine learning algorithm"  display="radio">
+          <option value="randomForest" selected="True">Random Forest</option>
+          <option value="svm">Support Vector Machine</option>
+          <option value="decision_tree">Decision tree</option>
+          <option value="XGBoost">XGBoost</option>
+          <option value="Logistic_regression">Logistic Regression</option>
+       </param>
+      <param name="iterator" type="integer" value="10" min="10" max="500" label="" help="The transfrags with minimal reads coverage (default: 3)."/>
+    </section>
+    <conditional name="ifCV">
+        <param name="cv" type="select" label="Whether to perform k-fold cross-validation?" display="radio">
+            <option value="yes" selected="True">Yes</option>
+            <option value="no">No</option>
+        </param>
+        <when value="yes">
+            <param name="kfold" type="integer" value="5" label="k-fold cross validation"/>
+        </when>
+    </conditional>
+
+	<param name="thread" type="integer" value="1" min="1" max="10" label="Threads" help="The number of threads used for parallel computation."/>
+  
+  </inputs>
+  <stdio>
+	<exit_code range="1:"  level="fatal" description="Error Running combine collection to a file" />
+  </stdio>
+  <outputs> 
+	<data name="fastq0" format="fasta,fna,,fa" label="filtered_transfrags.fa">
+	</data>
+  </outputs>
+  <help>
+<![CDATA[
+.. class:: infomark
+
+**What it does**
+
+In this function,  we utilized MMSeq2 (Steinegger *et al*., 2017) to cluster the assembled transfrags with both mRNA and ncRNA sequences from the Ensembl Plants across all plant species. Both assembled tranfrags and annotated plant sequences to serve as positive sample set.
+Then we used the corain package (Wang *et al*., 2023)  to encode for RNA from three perspectives, sequence, structure and physical chemical properties. Adopted the improved PSoL(IPSol) algorithm (Wang *et al*., 2006), the initial negative samples were generated from "unlabeled" sample set based on the PU bagging algorithm, the expanded negative samples iteratively using RF classifier until the designated iteration number was reached.
+
+-----
+
+.. class:: infomark
+
+**Inputs**
+
+- **Input the transfrags file:**  Input the transfrags in FASTA format
+
+-----
+
+.. class:: infomark
+
+**Parameters**
+
+- **Min reads coverage:** The transfrags with minimal reads coverage (default: 3)
+
+-----
+
+.. class:: infomark
+
+**Outputs**
+
+- **Filtered transfrags with reads coverage in FASTA format**
+
+]]>
+
+  </help>
+   <citations>
+        <citation type="doi">10.1038/nbt.3988</citation>
+        <citation type="doi">10.1093/nar/gkad929</citation>
+        <citation type="doi">10.1093/bioinformatics/btl441</citation>
+    </citations>
+</tool>
