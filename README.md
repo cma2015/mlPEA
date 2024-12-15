@@ -8,12 +8,12 @@
 - The mlPEA Docker image can be obtained from https://hub.docker.com/r/malab/mlpea.
 
 ## How to use mlPEA
-- Test data and tutorial of mlPEA are presented at https://github.com/cma2015/mlPEA/tree/main/Tutorials
-- [The installation of mlPEA](https://github.com/cma2015/mlPEA/blob/main/Tutorials/00_Installation.md)
-- [The Data Preprocessing Module](https://github.com/cma2015/mlPEA/blob/main/Tutorials/01_Data_Preprocessing_Module.md)
-- [The Transcriptome Construction Module](https://github.com/cma2015/mlPEA/blob/main/Tutorials/02_Transcriptome_Construction_Module.md)
-- [The m<sup>6</sup>A Calling Module](https://github.com/cma2015/mlPEA/blob/main/Tutorials/03_m<sup>6</sup>A_Calling_Module.md)
-- [The Functional Exploration Module](https://github.com/cma2015/mlPEA/blob/main/Tutorials/04_Functional_Exploration_Module.md)
+- Test data and tutorial of mlPEA are presented at [https://github.com/cma2015/mlPEA/tree/main/User_Manual](https://github.com/cma2015/mlPEA/blob/main/User_Manual/)
+- [The installation of mlPEA](https://github.com/cma2015/mlPEA/blob/main/User_Manual/tutorial/00_Installation.md)
+- [The Data Preprocessing Module](https://github.com/cma2015/mlPEA/blob/main/User_Manual/01_Data_Preprocessing_Module.md)
+- [The Transcriptome Construction Module](https://github.com/cma2015/mlPEA/blob/main/User_Manual//02_Transcriptome_Construction_Module.md)
+- [The m<sup>6</sup>A Calling Module](https://github.com/cma2015/mlPEA/blob/main/User_Manual/03_m6A_Calling_Module.md)
+- [The Functional Exploration Module](https://github.com/cma2015/mlPEA/blob/main/User_Manual/04_Functional_Exploration_Module.md)
 
 ## How to cite mlPEA
 - Yang, J., Song, M., Bu, Y., Liu, C., Zhao, H., Zhang, T., Zhang, C., & Ma, C. (2024). mlPEA:  m<sup>6</sup>A-Seq data analysis without a reference genome. (Submitted)
