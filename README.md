@@ -4,8 +4,8 @@
 
 ## Introduction
 - mlPEA is a user-friendly and multi-functionality platform specifically tailored to the needs of streamlined processing of m<sup>6</sup>A-Seq data in a reference genome-free manner. By taking advantage of machine learning (ML) algorithms, mlPEA enhanced the m<sup>6</sup>A-Seq data analysis by constructing robust computational models for identifying high-quality transcripts and high-confidence m<sup>6</sup>A-modified regions. mlPEA comprises four functional modules: **Data Preprocessing, Transcriptome Construction, m<sup>6</sup>A Calling, and Functional Exploration**. 
-- The mlPEA project is hosted on https://github.com/cma2015/mlPEA.
-- The mlPEA Docker image can be obtained from https://hub.docker.com/r/malab/mlpea.
+- mlPEA project is hosted on https://github.com/cma2015/mlPEA.
+- mlPEA Docker image can be obtained from https://hub.docker.com/r/malab/mlpea.
 
 ## How to use mlPEA
 - Test data and tutorial of mlPEA are presented at [https://github.com/cma2015/mlPEA/tree/main/User_Manual](https://github.com/cma2015/mlPEA/blob/main/User_Manual/)
@@ -19,7 +19,7 @@
 - Yang, J., Song, M., Bu, Y., Liu, C., Zhao, H., Zhang, T., Zhang, C., & Ma, C. (2024). mlPEA:  m<sup>6</sup>A-Seq data analysis without a reference genome. (Submitted)
 
 ## How to access help
-* Comments/suggestions/bugs/issues are welcome reported [here](https://github.com/cma2015/mlPEA/issues) or contact: Jing Yang sxxayj@nwafu.edu.cn, Minggui Song smg@nwafu.edu.cn or Chuang Ma chuangma2006@gmail.com
+* Comments/suggestions/bugs/issues are welcome to be reported [here](https://github.com/cma2015/mlPEA/issues) or contact: Jing Yang sxxayj@nwafu.edu.cn, Minggui Song smg@nwafu.edu.cn or Chuang Ma chuangma2006@gmail.com
 
 ## Quick start
 
@@ -42,14 +42,15 @@ Then, mlPEA local server can be accessed via [http://localhost:8080](http://loca
 - **Step 3**: Upload m<sup>6</sup>A-Seq data
 
 
-- **Step 4**: Construct transcriptome and perform ML-based transcript screening
+- **Step 4**: Construct assembled transcriptome and perform ML-based transcript screening
 
-- **Step 5**: Read mapping and m<sup>6</sup>A calling
+- **Step 5**: Call m<sup>6</sup>A peak and perform ML-based peak screening
 
-- **Step 5**: Functional Exploration
+- **Step 6**: Functional Exploration
 
 
 ## Change log
-- 2024.12 Release mlPEA v1.0
+- 2024.12 Add reference genome-free m<sup>6</sup>A-Seq data analysis pipeline in tutorial
+- 2024.11 Release mlPEA v1.0
 - 2024.10 mlPEA web server online
-- 2022.09 we launched mlPEA project
+- 2022.09 We launched mlPEA project
