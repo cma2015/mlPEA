@@ -1,0 +1,89 @@
+<tool id="diff_m6A" name="Differential Methylation">
+  <description></description>
+  <command><![CDATA[
+	mkdir -p ${__tool_directory__}/$$/ &&
+	source /home/galaxy/miniconda3/bin/activate /home/galaxy/miniconda3/envs/bio &&
+	#set $case_ip_set = list()
+  #set $case_input_set = list()
+  #for $fileone in $case_bam:
+    ln -sf $fileone.ip_bam $fileone.ip_bam'.bam';
+    ln -sf $fileone.input_bam $fileone.input_bam'.bam';
+    $case_ip_set.append(str($fileone.ip_bam)+'.bam')
+    $case_input_set.append(str($fileone.input_bam)+'.bam')
+  #end for
+  #set $control_ip_set = list()
+  #set $control_input_set = list()
+  #for $fileone in $control_bam:
+    ln -sf $fileone.ip_bam $fileone.ip_bam'.bam';
+    ln -sf $fileone.input_bam $fileone.input_bam'.bam';
+    $control_ip_set.append(str($fileone.ip_bam)+'.bam')
+    $control_input_set.append(str($fileone.input_bam)+'.bam')
+  #end for
+  #set $case_ip_set = ','.join($case_ip_set)
+  #set $case_input_set = ','.join($case_input_set)
+  #set $control_ip_set = ','.join($control_ip_set)
+  #set $control_input_set = ','.join($control_input_set)
+  /home/galaxy/miniconda3/envs/bio/bin/Rscript ${__tool_directory__}/01_differential_peak_analysis.R -fasta_file $Fasta 
+      -case_ip_bam $case_ip_set
+      -case_input_bam $case_input_set
+      -control_ip_bam $control_ip_set
+      -control_input_bam $control_input_set 
+      -threads $thread
+      -dir ${__tool_directory__}/$$/
+	&& mv ${__tool_directory__}/$$/diffm6A.txt $fastq0
+	&& rm -rf ${__tool_directory__}/$$/
+  ]]></command>
+  <inputs>
+    <param name="Fasta" type="data" format="fasta,fna,fa"  multiple="false" label="Assembled transcript file" help=""/>
+	<repeat name="case_bam" title="Case BAM files" min="1" default="1">
+        <param name="ip_bam" type="data" format="bam"  multiple="false" label="The bam file of IP sample" help=""/>
+		<param name="input_bam" type="data" format="bam"  multiple="false" label="The bam file of input sample" help=""/>
+	</repeat>
+	<repeat name="control_bam" title="Control BAM files" min="1" default="1">
+        <param name="ip_bam" type="data" format="bam"  multiple="false" label="The bam file of IP sample" help=""/>
+		<param name="input_bam" type="data" format="bam"  multiple="false" label="The bam file of input sample" help=""/>
+	</repeat>
+	
+	<param name="thread" type="integer" value="1" min="1" max="16" label="Threads" help="The number of threads used for parallel computation."/>
+  </inputs>
+  <stdio>
+	<exit_code range="1:"  level="fatal" description="Error Running combine collection to a file" />
+  </stdio>
+  <outputs> 
+	<data name="fastq0" format="txt" label="Differential Peaks">
+	</data>
+  </outputs>
+  <help>
+
+<![CDATA[
+.. class:: infomark
+
+**What it does**
+
+In this function, for pair-wised m6A-Seq data, mlPEA can identify differentially methylated regions (DMRs) using **QNB** (Liu *et al*., 2017), with the negative-binomial distribution model to capture the within-group variability of m6A methylation level across all samples.
+
+-----
+
+.. class:: infomark
+
+**Inputs**
+
+- **Assembled transcript file in FASTA format**
+- **Case BAM files:** IP and input samples for case group in BAM format
+- **Control BAM files:** IP and input samples for control group in BAM format
+
+-----
+
+.. class:: infomark
+
+**Outputs**
+
+- **The differential peak region matrix in TXT format**
+
+]]>
+
+  </help>
+   <citations>
+        <citation type="doi">10.1186/s12859-017-1808-4</citation>
+    </citations>
+</tool>

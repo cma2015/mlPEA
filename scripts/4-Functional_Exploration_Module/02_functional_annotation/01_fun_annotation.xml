@@ -1,0 +1,57 @@
+<tool id="func_annotation" name="Functional Annotation">
+  <description></description>
+  <command><![CDATA[
+      mkdir -p ${__tool_directory__}/$$
+      && awk '/^>/ {getline seq; print $0":1-"length(seq)"(*)(0, 0)\n"seq}' $Fasta > ${__tool_directory__}/$$/tmp.fasta
+      && /home/galaxy/miniconda3/envs/bio/bin/Rscript ${__tool_directory__}/01_translation_transcript.R 
+          -fasta_file $Fasta
+          -transcript_anno $Transcript_anno
+          -dir ${__tool_directory__}/$$
+      && source /home/galaxy/miniconda3/bin/activate /home/galaxy/miniconda3/envs/eggnog
+      && /home/galaxy/miniconda3/envs/eggnog/bin/emapper.py
+        --itype proteins -i ${__tool_directory__}/$$/tmp_PUlearning_pep.fa
+        --output ${__tool_directory__}/$$/tmp
+        --cpu ${thread} --usemem  -d  /home/galaxy/miniconda3/envs/eggnog/lib/python3.8/site-packages/data/eggnog_proteins.dmnd  -m diamond --override
+      && mv ${__tool_directory__}/$$/tmp.emapper.annotations $annotation_result
+      && rm -rf ${__tool_directory__}/$$
+  ]]></command>
+  <inputs>
+	  <param name="Fasta" type="data" format="fasta,fna,fa"  multiple="false" label="Assembled transcript file" help=""/>
+    <param name="Transcript_anno" type="data" format="txt"  multiple="false" label="Transcript annotation file" help=""/>
+    <param name="thread" type="integer" value="1" min="1" max="12" label="Threads"/>
+  </inputs>
+  <stdio>
+	  <exit_code range="1:"  level="fatal" description="Error Running combine collection to a file" />
+	</stdio>
+  <outputs>
+	  <data name="annotation_result" format="txt" label="Eggnog Annotation Results">
+    </data>
+
+  </outputs>
+<help>
+.. class:: infomark
+
+**What it does**
+
+In this function, functional annotation was performed useing eggNOG-mapper (v2.1.9 (Huerta-Cepas *et al*, 2017); database v5.0.2 (Huerta-Cepas *et al*, 2018)) to identify potential functions based on homology.
+
+.. class:: infomark
+
+**Inputs**
+
+- **Assembled transcript file:** Input assembled transcripts in FASTA format
+- **Transcript annotation file:** Transcript annotation in TXT format
+
+.. class:: infomark
+
+**Outputs**
+
+- **Transcripts function annotation results in TXT format by eggNOG**
+
+</help>
+    <citations>
+        <citation type="doi">10.1101/2023.07.08.548206</citation>
+        <citation type="doi">10.1093/molbev/msx148</citation>
+        <citation type="doi">10.1093/nar/gky1085</citation>
+    </citations>
+</tool>
