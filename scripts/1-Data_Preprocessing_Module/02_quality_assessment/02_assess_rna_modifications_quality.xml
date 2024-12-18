@@ -1,0 +1,90 @@
+<tool id="Assess_RNA_Modifications_Quality" name="Differential K-mer Analysis">
+  <command><![CDATA[
+	mkdir -p ${__tool_directory__}/$$/ &&
+
+	#if $paired.is_paired == "paired":
+
+		ln -sf $PE_FASTQ_IP_R1 $PE_FASTQ_IP_R1'.fq';
+		ln -sf $PE_FASTQ_IP_R2 $PE_FASTQ_IP_R2'.fq';
+
+		ln -sf $PE_FASTQ_INPUT_R1 $PE_FASTQ_INPUT_R1'.fq';
+		ln -sf $PE_FASTQ_INPUT_R2 $PE_FASTQ_INPUT_R2'.fq';
+		bash ${__tool_directory__}/02_generate_kmdiff_file_PE.sh ${__tool_directory__}/$$  $PE_FASTQ_INPUT_R1'.fq' $PE_FASTQ_INPUT_R2'.fq' $PE_FASTQ_IP_R1'.fq' $PE_FASTQ_IP_R2'.fq' $thread $kmer_length $hard_min
+	#else:
+		ln -sf $SE_FASTQ_IP $SE_FASTQ_IP'.fq';
+		ln -sf $SE_FASTQ_INPUT $SE_FASTQ_INPUT'.fq';
+		bash ${__tool_directory__}/02_generate_kmdiff_file_SE.sh $SE_FASTQ_IP'.fq' $SE_FASTQ_INPUT'.fq' ${__tool_directory__}/$$ $thread $kmer_length $hard_min
+	#end if
+	
+	&& mv ${__tool_directory__}/$$/control_kmers.fasta ${input_kmer_count}
+	&& mv ${__tool_directory__}/$$/case_kmers.fasta ${ip_kmer_count}
+	&& rm -rf ${__tool_directory__}/$$/
+  ]]></command>
+  <inputs>
+	<conditional name="paired">
+        <param name="is_paired" type="select" label="Single-end or paired-end reads?">
+            <option value="single" > single-end</option>
+            <option value="paired" selected="true">paired-end</option>
+        </param>
+		<when value="single">
+        	<param name="SE_FASTQ_INPUT" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="The FASTQ file of input" help=""/>
+			<param name="SE_FASTQ_IP" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="The FASTQ file of ip" help=""/>
+		</when>
+		<when value="paired">
+        	<param name="PE_FASTQ_INPUT_R1" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="The FASTQ file(R1) of input" help=""/>
+			<param name="PE_FASTQ_INPUT_R2" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="The FASTQ file(R2) of input" help=""/>
+			<param name="PE_FASTQ_IP_R1" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="The FASTQ file(R1) of IP" help=""/>
+			<param name="PE_FASTQ_IP_R2" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="The FASTQ file(R2) of IP" help=""/>
+		</when>
+    </conditional>
+	
+	<param name="kmer_length"  argument="-k" type="integer" value="8" label="k-mers length" help="k-mer length (k from 8 to 20; default: 8)."/>
+	<param name="hard_min"  argument="--hard-min" type="integer" value="20" label="hard min" help="min abundance to keep a k-mer."/>
+	<param name="thread" type="integer" value="1" min="1" max="16" label="Threads" help="The number of threads used for parallel computation."/>
+
+  </inputs>
+  <stdio>
+	<exit_code range="1:"  level="fatal" description="Error Running combine collection to a file" />
+  </stdio>
+   <outputs>
+	<data name="input_kmer_count" format="fasta" label="Differental K-mer sequences(input sample)" />
+	<data name="ip_kmer_count" format="fasta" label="Differental K-mer sequences(IP sample)" />
+   </outputs>
+<help><![CDATA[
+.. class:: infomark
+
+**What it does**
+
+In this function, one existing disk-based program **kmdiff** is integrated to count k-mers from (possibly gzipped) FASTQ/FASTA files.
+
+-----
+
+.. class:: infomark
+
+**Inputs**
+
+- **Input FASTQ file:** IP and Input cleaned epitranscriptome sequence reads in FASTQ format
+
+-----
+
+.. class:: infomark
+
+**Parameters**
+
+- **k-mers length:** k-mer length (k from 8 to 20; default: 8)
+- **hard-min:** min abundance to keep a k-mer
+
+-----
+
+.. class:: infomark
+
+**Outputs**
+
+- **Differential K-mer sequences (input sample) in FASTA format**
+- **Differential K-mer sequences (IP sample) in FASTA format**
+
+]]></help>
+    <citations>
+        <citation type="doi">10.1093/bioinformatics/btac689</citation>
+    </citations>
+</tool>

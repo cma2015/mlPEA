@@ -1,0 +1,147 @@
+<tool id="rnaSPAdes_Assembly" name="rnaSPAdes Assembly">
+  <description></description>
+  <command><![CDATA[
+	mkdir -p ${__tool_directory__}/$$/ &&
+	#if $paired.is_paired == "paired":
+		#set $opt = list()
+        #for $i,$s in enumerate($paired.PE_fastqFiles):
+            ln -sf $s.PE_FASTQ_R1 $s.PE_FASTQ_R1'.fq';
+            ln -sf $s.PE_FASTQ_R2 $s.PE_FASTQ_R2'.fq';
+            $opt.append('--pe'+str($i + 1)+'-1')
+            $opt.append(str($s.PE_FASTQ_R1)+'.fq')
+            $opt.append('--pe'+str($i + 1)+'-2')
+            $opt.append(str($s.PE_FASTQ_R2)+'.fq')
+        #end for
+		#set opt = ' '.join($opt)
+		#if $paired.strand_specific.is_strand_specific == "strand_specific":
+			/home/galaxy/miniconda3/envs/bio/bin/rnaspades.py
+				--ss ${paired.strand_specific.libType}
+				-m ${memory}
+				-t $thread
+				-o ${__tool_directory__}/$$/
+				$opt
+		#else:
+			/home/galaxy/miniconda3/envs/bio/bin/rnaspades.py
+				-m ${memory}
+				-t $thread
+				-o ${__tool_directory__}/$$/
+				$opt
+		#end if
+	#else:
+		#set $opt = list()
+        #for $i,$s in enumerate($paired.SE_fastqFiles):
+            ln -sf $s.SE_FASTQ $s.SE_FASTQ'.fq';
+            $opt.append('--s '+str($i + 1)+'-1')
+            $opt.append(str($s.SE_FASTQ)+'.fq')
+		#end for
+		#set opt = ' '.join($opt)
+		#if $single.strand_specific.is_strand_specific == "strand_specific":
+			/home/galaxy/miniconda3/envs/bio/bin/rnaspades.py
+				--ss ${paired.strand_specific.libType}
+				-m ${memory}
+				-t $thread
+				-o ${__tool_directory__}/$$/
+				$opt
+		#else:
+			/home/galaxy/miniconda3/envs/bio/bin/rnaspades.py
+				-m ${memory}
+				-t $thread
+				-o ${__tool_directory__}/$$/
+				$opt
+		#end if
+	#end if	
+	&& mv ${__tool_directory__}/$$/transcripts.fasta $fastq0
+	&& rm -rf ${__tool_directory__}/$$/
+  ]]></command>
+  <inputs>
+    <conditional name="paired">
+        <param name="is_paired" type="select" label="Single-end or paired-end reads?">
+            <option value="single" > single-end</option>
+            <option value="paired" selected="true">paired-end</option>
+        </param>
+		<when value="single">
+			<conditional name="strand_specific">
+        		<param name="is_strand_specific" type="select" label="Strand-specific reads?">
+            		<option value="non_strand_specific" selected="true"> non-strand-specific</option>
+            		<option value="strand_specific">strand-specific</option>
+        		</param>
+				<when value="strand_specific">
+					<param name="libType" type="select" label="Strand Specific lib type">
+            			<option value="fr" selected="true"> FR</option>
+            			<option value="rf">RF</option>
+        			</param>
+				</when>
+    		</conditional>
+			<repeat name="SE_fastqFiles" title="FASTQ file" min="1">
+        		<param name="SE_FASTQ" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="Input the FASTQ file" help=""/>
+    		</repeat>
+		</when>
+		<when value="paired">
+			<conditional name="strand_specific">
+        		<param name="is_strand_specific" type="select" label="Strand-specific reads?">
+            		<option value="non_strand_specific" selected="true"> non-strand-specific</option>
+            		<option value="strand_specific">strand-specific</option>
+        		</param>
+				<when value="strand_specific">
+					<param name="libType" type="select" label="Strand Specific lib type">
+            			<option value="fr" selected="true">FR</option>
+            			<option value="rf">RF</option>
+        			</param>
+				</when>
+    		</conditional>
+			<repeat name="PE_fastqFiles" title="FASTQ file" min="1">
+        		<param name="PE_FASTQ_R1" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="Input the FASTQ file(R1)" help=""/>
+				<param name="PE_FASTQ_R2" type="data" format="fastqsanger,fastqsanger.gz,fastq,fq"  multiple="false" label="Input the FASTQ file(R2)" help=""/>
+			</repeat>
+		</when>
+    </conditional>
+	<param name="thread" type="integer" value="1" min="1" max="16" label="Threads" help="The number of threads used for parallel computation."/>
+	<param name="memory" type="integer" value="8" min="8" max="64" label="Max memory" help="max memory to use by rnaSpades(GB)"/>
+
+  </inputs>
+  <stdio>
+	<exit_code range="1:"  level="fatal" description="Error Running combine collection to a file" />
+  </stdio>
+  <outputs> 
+	<data name="fastq0" format="fasta" label="Assembly_transfrags(By_rnaSPAdes)">
+	</data>
+  </outputs>
+  <help>
+<![CDATA[
+.. class:: infomark
+
+**What it does**
+
+In this function,  **SPAdes** (Prjibelski *et al*., 2020) is a versatile toolkit designed for assembly and analysis of sequencing data. SPAdes is primarily developed for Illumina sequencing data, but can be used for IonTorrent as well. Most of SPAdes pipelines support hybrid mode, i.e. allow using long reads (PacBio and Oxford Nanopore) as a supplementary data.
+
+-----
+
+.. class:: infomark
+
+**Inputs**
+
+- **Input FASTQ files:**  The input of clean m6A-Seq reads in FASTQ format
+
+-----
+
+.. class:: infomark
+
+**Parameters**
+
+- **Strand-specific information:** Strand-specific RNA-Seq read orientation.if paired: RF or FR,if single: F or R.   (dUTP method = RF)
+
+-----
+
+.. class:: infomark
+
+**Outputs**
+
+- **De novo assembled transcripts by rnaSPAdes in FASTA format**
+
+]]>
+
+  </help>
+   <citations>
+        <citation type="doi">10.1002/cpbi.102</citation>
+    </citations>
+</tool>
