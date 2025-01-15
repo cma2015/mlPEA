@@ -16,7 +16,7 @@
 - [The Functional Exploration Module](https://github.com/cma2015/mlPEA/blob/main/User_Manual/04_Functional_Exploration_Module.md)
 
 ## How to cite mlPEA
-- Yang, J., Song, M., Bu, Y., Liu, C., Zhao, H., Zhang, T., Zhang, C., Xu, S., & Ma, C. (2024). mlPEA:  m<sup>6</sup>A-Seq data analysis without a reference genome. (Submitted)
+- Yang, J., Song, M., Bu, Y., Zhao, H., Liu, C., Zhang, T., Zhang, C., Xu, S., & Ma, C. (2024). mlPEA:  m<sup>6</sup>A-Seq data analysis without a reference genome. (Submitted)
 
 ## How to access help
 * Comments/suggestions/bugs/issues are welcome to be reported [here](https://github.com/cma2015/mlPEA/issues) or contact: Jing Yang sxxayj@nwafu.edu.cn, Minggui Song smg@nwafu.edu.cn or Chuang Ma chuangma2006@gmail.com
