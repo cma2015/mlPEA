@@ -50,7 +50,7 @@ Then, mlPEA local server can be accessed via [http://localhost:8080](http://loca
 
 
 ## Change log
-- 2025.03 Release mlPEA v2.0
+- 2025.03 Release mlPEA v1.1
 - 2024.12 Add reference genome-free m<sup>6</sup>A-Seq data analysis pipeline in tutorial
 - 2024.11 Release mlPEA v1.0
 - 2024.10 mlPEA web server online
